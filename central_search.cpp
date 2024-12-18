@@ -29,11 +29,11 @@ void execute_linear_search(const std::vector<std::string> &data, const std::stri
 
     if (index != -1)
     {
-        std::cout << "Linear Search:\n Value found at index: " << index << "\n";
+        std::cout << "Linear Search:\nValue found at index: " << index << "\n";
     }
     else
     {
-        std::cout << "Linear Search:\n Value not found in the list.\n";
+        std::cout << "Linear Search:\nValue not found in the list.\n";
     }
     std::cout << "Iterations: " << iterations << "\n";
     std::cout << "Time taken: " << duration.count() << " microseconds\n";
@@ -42,24 +42,52 @@ void execute_linear_search(const std::vector<std::string> &data, const std::stri
 
 void execute_binary_search(const std::vector<std::string> &data, const std::string &target)
 {
-    std::vector<std::string> sorted_data = data;
-    std::sort(sorted_data.begin(), sorted_data.end());
+    // Store original indices alongside the values
+    std::vector<std::pair<std::string, int>> indexed_data;
+    for (size_t i = 0; i < data.size(); ++i)
+    {
+        indexed_data.emplace_back(data[i], i);
+    }
+
+    // Sort the data by value
+    std::sort(indexed_data.begin(), indexed_data.end());
 
     int iterations = 0;
     long memory_before = get_memory_usage_kb();
     auto start = std::chrono::high_resolution_clock::now();
-    int index = binary_search(sorted_data, target, iterations);
+
+    // Perform binary search
+    int left = 0, right = indexed_data.size() - 1, found_index = -1;
+    while (left <= right)
+    {
+        ++iterations;
+        int mid = left + (right - left) / 2;
+        if (indexed_data[mid].first == target)
+        {
+            found_index = indexed_data[mid].second; // Retrieve the original index
+            break;
+        }
+        if (indexed_data[mid].first < target)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+
     auto end = std::chrono::high_resolution_clock::now();
     long memory_after = get_memory_usage_kb();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-    if (index != -1)
+    if (found_index != -1)
     {
-        std::cout << "Binary Search:\n Value found at index: " << index << "\n";
+        std::cout << "Binary Search:\nValue found at original index: " << found_index << "\n";
     }
     else
     {
-        std::cout << "Binary Search:\n Value not found in the list.\n";
+        std::cout << "Binary Search:\nValue not found in the list.\n";
     }
     std::cout << "Iterations: " << iterations << "\n";
     std::cout << "Time taken: " << duration.count() << " microseconds\n";
@@ -69,26 +97,30 @@ void execute_binary_search(const std::vector<std::string> &data, const std::stri
 void execute_skip_list_search(const std::vector<std::string> &data, const std::string &target)
 {
     SkipList skipList(16, 0.5);
-    for (const auto &val : data)
+
+    // Insert values along with their original indices
+    for (size_t i = 0; i < data.size(); ++i)
     {
-        skipList.insert(val);
+        skipList.insert(std::make_pair(data[i], i));
     }
 
     int iterations = 0;
     long memory_before = get_memory_usage_kb();
     auto start = std::chrono::high_resolution_clock::now();
-    int result = skipList.search(target, iterations);
+
+    // Search in SkipList
+    auto result = skipList.search(target, iterations);
     auto end = std::chrono::high_resolution_clock::now();
     long memory_after = get_memory_usage_kb();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
     if (result != -1)
     {
-        std::cout << "Binary Search:\n Value found at index: " << result << "\n";
+        std::cout << "Skip List Search:\nValue found at original index: " << result << "\n";
     }
     else
     {
-        std::cout << "Skip List Search:\n Value not found in the list.\n";
+        std::cout << "Skip List Search:\nValue not found in the list.\n";
     }
     std::cout << "Iterations: " << iterations << "\n";
     std::cout << "Time taken: " << duration.count() << " microseconds\n";

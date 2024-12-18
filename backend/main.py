@@ -103,8 +103,7 @@ def run_central_search(target: str, algorithms: List[str]):
                     'result': "Nenhum resultado encontrado"
                 }
             elif "Value" in line:
-                index_str = line.split(":")[1].strip()
-                if index_str == 'Value not found in the list.':
+                if line == 'Value not found in the list.':
                     algo_results["index"] = -1
                 else:
                     algo_results["index"] = int(line.split(":")[1].strip())
@@ -135,5 +134,6 @@ def run_central_search(target: str, algorithms: List[str]):
 
 @app.post("/search", response_model=SearchResponse)
 def search(request: SearchRequest):
+    # return {"results": {'linear': {'index': 2541323, 'iterations': 2541324, 'time': '57139 microseconds', 'memory': '0 KB', 'type': 'linear', 'output': 'Linear Search:\nValue found at index: 2541323\nIterations: 2541324\nTime taken: 57139 microseconds', 'result': '821675439345129678967834521739412856182956743654783912518367294293548167476291385'}, 'skip_list': {'index': 8333849, 'iterations': 23, 'time': '9 microseconds', 'memory': '0 KB', 'type': 'binary', 'output': 'Binary Search:\nValue found at index: 8333849\nIterations: 23\nTime taken: 9 microseconds', 'result': '251863947493175826786429513928614735174538692365792184842956371537281469619347258'}, 'binary': {'index': 8333849, 'iterations': 23, 'time': '9 microseconds', 'memory': '0 KB', 'type': 'binary', 'output': 'Binary Search:\nValue found at index: 8333849\nIterations: 23\nTime taken: 9 microseconds', 'result': '251863947493175826786429513928614735174538692365792184842956371537281469619347258'}}}
     results = run_central_search(request.target, request.algorithms)
     return {"results": results}

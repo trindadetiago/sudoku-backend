@@ -27,9 +27,11 @@ int main(int argc, char *argv[])
 
     std::vector<std::string> list;
     std::string line;
+    int index = 0;
     while (std::getline(infile, line))
     {
         list.push_back(line);
+        index++;
     }
 
     if (list.empty())
@@ -42,22 +44,22 @@ int main(int argc, char *argv[])
     list.pop_back();
 
     SkipList skipList(16, 0.5);
-    for (const auto &val : list)
+    for (size_t i = 0; i < list.size(); ++i)
     {
-        skipList.insert(val);
+        skipList.insert({list[i], static_cast<int>(i)});
     }
 
     int iterations = 0;
     long memory_before = get_memory_usage_kb();
     auto start = std::chrono::high_resolution_clock::now();
-    int result = skip_list_search(skipList, target, iterations);
+    int result = skipList.search(target, iterations);
     auto end = std::chrono::high_resolution_clock::now();
     long memory_after = get_memory_usage_kb();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
     if (result != -1)
     {
-        std::cout << "Value found.\n";
+        std::cout << "Value found at original index: " << result << "\n";
     }
     else
     {

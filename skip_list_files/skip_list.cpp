@@ -1,15 +1,16 @@
-#include <iostream>
+#include <string>
 #include <vector>
-#include <cstdlib>
+#include <utility>
 #include <ctime>
-#include <limits>
+#include <cstdlib>
 
 struct SkipNode
 {
     std::string value;
+    int originalIndex; // New field to store the original index
     std::vector<SkipNode *> forward;
 
-    SkipNode(const std::string &val, int level) : value(val), forward(level, nullptr) {}
+    SkipNode(const std::string &val, int index, int level) : value(val), originalIndex(index), forward(level, nullptr) {}
 };
 
 class SkipList
@@ -17,7 +18,7 @@ class SkipList
 public:
     SkipList(int maxLevel, float probability) : maxLevel(maxLevel), probability(probability)
     {
-        head = new SkipNode("", maxLevel);
+        head = new SkipNode("", -1, maxLevel); // -1 for originalIndex as it's a dummy head node
         srand(static_cast<unsigned>(time(nullptr)));
     }
 
@@ -26,8 +27,11 @@ public:
         delete head;
     }
 
-    void insert(const std::string &value)
+    void insert(const std::pair<std::string, int> &data)
     {
+        const std::string &value = data.first;
+        int index = data.second;
+
         std::vector<SkipNode *> update(maxLevel, nullptr);
         SkipNode *current = head;
 
@@ -41,7 +45,7 @@ public:
         }
 
         int level = randomLevel();
-        SkipNode *newNode = new SkipNode(value, level);
+        SkipNode *newNode = new SkipNode(value, index, level);
 
         for (int i = 0; i < level; ++i)
         {
@@ -54,6 +58,7 @@ public:
     {
         iterations = 0;
         SkipNode *current = head;
+
         for (int i = maxLevel - 1; i >= 0; --i)
         {
             while (current->forward[i] && current->forward[i]->value < value)
@@ -66,9 +71,9 @@ public:
         current = current->forward[0];
         if (current && current->value == value)
         {
-            return iterations;
+            return current->originalIndex; // Return the original index of the found value
         }
-        return -1;
+        return -1; // Not found
     }
 
 private:
