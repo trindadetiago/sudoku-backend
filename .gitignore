@@ -1,0 +1,9 @@
+myenv/
+.vscode/
+__pycache__/
+venv/
+
+*.exe
+binary_search
+linear_search
+skip_list_search
