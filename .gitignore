@@ -7,3 +7,4 @@ venv/
 binary_search
 linear_search
 skip_list_search
+central_search

@@ -84,7 +84,7 @@ void execute_skip_list_search(const std::vector<std::string> &data, const std::s
 
     if (result != -1)
     {
-        std::cout << "Skip List Search:\n Value found.\n";
+        std::cout << "Binary Search:\n Value found at index: " << result << "\n";
     }
     else
     {
